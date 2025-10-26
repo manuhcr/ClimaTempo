@@ -1,0 +1,158 @@
+Diferença entre clima.py (script Python) e app.py (Flask web app)
+1. O que é o clima.py?
+Script simples em Python
+
+Funciona no terminal (linha de comando)
+
+Pede ao usuário para digitar o nome da cidade usando input()
+
+Consulta a API do clima (OpenWeatherMap)
+
+Mostra o resultado no terminal com print()
+
+Exemplo:
+
+python
+Copiar
+Editar
+cidade = input("Digite a cidade: ")
+dados = obter_clima(cidade)
+mostrar_clima(dados)
+2. O que é o app.py com Flask?
+Aplicação web em Python
+
+Roda um servidor local que você acessa pelo navegador
+
+Recebe o nome da cidade via formulário HTML (página web)
+
+Consulta a API do clima
+
+Retorna uma página HTML com o resultado formatado (com CSS e layout)
+
+Exemplo de rota no Flask:
+
+python
+Copiar
+Editar
+from flask import Flask, render_template, request
+
+@app.route("/", methods=["GET", "POST"])
+def index():
+    if request.method == "POST":
+        cidade = request.form.get("cidade")
+        dados = obter_clima(cidade)
+        # enviar dados para template
+    return render_template("index.html", clima=dados)
+3. Diferenças principais
+Aspecto	clima.py	app.py (Flask)
+Como recebe a cidade	input() no terminal	Formulário HTML via navegador
+Como mostra resultado	print() no terminal	Renderiza página HTML com dados
+Uso	Local, só você no terminal	Qualquer pessoa pelo navegador
+Interface	Texto simples	Página web com layout e CSS
+Código	Funções + execução linear	Rotas, templates e servidor web
+
+4. Estrutura básica para app Flask
+bash
+Copiar
+Editar
+/meu_projeto
+│
+├── app.py          # Código Flask (servidor)
+├── templates/
+│   └── index.html  # Página HTML (template)
+└── static/
+    └── style.css   # CSS para estilizar a página
+5. Exemplo simples do app.py
+python
+Copiar
+Editar
+from flask import Flask, render_template, request
+import requests
+
+app = Flask(__name__)
+chave_api = "sua_chave_api"
+
+def obter_clima(cidade):
+    # código para chamar API e retornar dados (igual no seu clima.py)
+    # ...
+
+@app.route("/", methods=["GET", "POST"])
+def index():
+    clima = None
+    erro = None
+    if request.method == "POST":
+        cidade = request.form.get("cidade")
+        if cidade:
+            dados = obter_clima(cidade)
+            if dados:
+                clima = {
+                    "nome": dados.get("name"),
+                    "pais": dados["sys"].get("country"),
+                    "descricao": dados["weather"][0].get("description", "").capitalize(),
+                    "temp": dados["main"].get("temp"),
+                    "sensacao": dados["main"].get("feels_like"),
+                    "umidade": dados["main"].get("humidity"),
+                    "vento": dados["wind"].get("speed"),
+                }
+            else:
+                erro = "Cidade não encontrada."
+        else:
+            erro = "Digite uma cidade válida."
+    return render_template("index.html", clima=clima, erro=erro)
+
+if __name__ == "__main__":
+    app.run(debug=True)
+6. Exemplo básico do template index.html
+html
+Copiar
+Editar
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8" />
+    <title>Clima App</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+<body>
+    <h1>Consulta de Clima</h1>
+    <form method="POST">
+        <input name="cidade" placeholder="Digite a cidade" required />
+        <button type="submit">Buscar</button>
+    </form>
+
+    {% if erro %}
+    <p style="color:red">{{ erro }}</p>
+    {% endif %}
+
+    {% if clima %}
+    <div class="resultado">
+        <h2>Clima em {{ clima.nome }}, {{ clima.pais }}</h2>
+        <p>{{ clima.descricao }}</p>
+        <p>Temperatura: {{ clima.temp }}°C (sensação {{ clima.sensacao }}°C)</p>
+        <p>Umidade: {{ clima.umidade }}%</p>
+        <p>Vento: {{ clima.vento }} m/s</p>
+    </div>
+    {% endif %}
+</body>
+</html>
+7. Como rodar o app Flask
+Instale Flask:
+
+bash
+Copiar
+Editar
+pip install flask
+Crie os arquivos app.py, a pasta templates com index.html e opcionalmente static/style.css
+
+Execute no terminal:
+
+bash
+Copiar
+Editar
+python app.py
+Abra o navegador e acesse:
+
+cpp
+Copiar
+Editar
+http://127.0.0.1:5000/

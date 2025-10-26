@@ -1,0 +1,82 @@
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(155deg , #9e4471, #003953 );
+  color: #aee2f7;
+  margin-top: 28px;
+  padding: 8%;
+  min-height: 62vh;
+  display: flex;
+  align-items: center;
+  text-align: center;
+  justify-content: center;
+}
+
+h1 {
+  margin-bottom: 20px;
+  color: #ebdcfc;
+}
+.consulta {
+  flex-direction: column;
+}
+
+form {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 30px;
+}
+
+input[name="cidade"] {
+  padding: 10px;
+  font-size: 1rem;
+  border: 2px solid #005f99;
+  border-radius: 6px;
+  width: 200px;
+  transition: border-color 0.3s ease;
+}
+
+input[name="cidade"]:focus {
+  border-color: #007acc;
+  outline: none;
+}
+
+button {
+  background-color: #007acc;
+  color: white;
+  font-weight: bold;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #005f99;
+}
+
+.resultado {
+  background: white;
+  padding: 20px 25px;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0, 95, 153, 0.25);
+  max-width: 350px;
+  width: 100%;
+  text-align: center;
+}
+
+.resultado h2 {
+  margin-top: 0;
+  color: #005f99;
+  text-shadow: 1px 1px 2px #b0d4ff;
+}
+
+p {
+  font-size: 1.1rem;
+  margin: 6px 0;
+}
+
+p[style*="color:red"] {
+  font-weight: bold;
+  font-size: 1rem;
+}

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8" />
+    <title>Previsão do Tempo</title>
+    <!--
+    Link para o arquivo CSS na pasta 'static'.
+
+    Em Flask, os arquivos estáticos (CSS, JS, imagens) ficam na pasta 'static'.
+    Para garantir que o caminho funcione corretamente em qualquer ambiente,
+    usamos o 'url_for' para gerar o caminho correto para o arquivo.
+
+    Exemplo:
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    Se usar apenas 'static/style.css' pode funcionar localmente,
+    mas pode falhar quando o app estiver rodando no servidor,
+    ou se a aplicação estiver em uma subpasta.
+
+    Portanto, a forma recomendada em Flask é usar url_for.
+-->
+   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+<body>
+    <div class="consulta">
+            <h1>Consulta de Clima</h1>
+    <!-- Formulário para o usuário digitar a cidade -->
+    <form method="POST">
+        <input type="text" name="cidade" placeholder="Digite a cidade" required />
+        <button type="submit">Buscar</button>
+    </form>
+
+    <!-- Se tiver mensagem de erro, mostra em vermelho -->
+    {% if erro %}
+    <p style="color:red;">{{ erro }}</p>
+    {% endif %}
+    </div>
+
+
+    <!-- Se tiver dados do clima, mostra as informações formatadas -->
+     <div class="infos">
+        {% if clima %}
+    <h2>Clima em {{ clima.nome }}, {{clima.estado}}, {{ clima.pais }}</h2>
+    <p>{{ clima.descricao }}</p>
+    <p>Temperatura: {{ clima.temp }}°C</p>
+    <p>Sensação Térmica: {{clima.sensacao}} °C</p>
+    <p>Umidade: {{ clima.umidade }}%</p>
+    <p>Vento: {{ clima.vento }} m/s</p>
+    {% endif %}
+     </div>
+    <script>
+</script>
+
+</body>
+</html>
