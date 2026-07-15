@@ -296,14 +296,6 @@ button:hover {
 }
 
 p[style*="color:red"] {
-  color: #f87171 !important;
-  font-weight: 500;
-  font-size: 0.95rem;
-  background: rgba(248, 113, 113, 0.1);
-  padding: 14px;
-  border-radius: 16px;
-  border: 1px solid rgba(248, 113, 113, 0.2);
-  margin-top: 10px;
-  width: 100%;
-  box-sizing: border-box;
+  font-weight: bold;
+  font-size: 1rem;
 }
