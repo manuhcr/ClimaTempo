@@ -3,54 +3,149 @@
 <head>
     <meta charset="UTF-8" />
     <title>Previsão do Tempo</title>
-    <!--
-    Link para o arquivo CSS na pasta 'static'.
-
-    Em Flask, os arquivos estáticos (CSS, JS, imagens) ficam na pasta 'static'.
-    Para garantir que o caminho funcione corretamente em qualquer ambiente,
-    usamos o 'url_for' para gerar o caminho correto para o arquivo.
-
-    Exemplo:
+    <!-- Link do FontAwesome para carregar os ícones mais bonitos e nítidos do mundo -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <!-- Seu CSS em Flask -->
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-
-    Se usar apenas 'static/style.css' pode funcionar localmente,
-    mas pode falhar quando o app estiver rodando no servidor,
-    ou se a aplicação estiver em uma subpasta.
-
-    Portanto, a forma recomendada em Flask é usar url_for.
--->
-   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-
 </head>
-<body>
-    <div class="consulta">
-            <h1>Consulta de Clima</h1>
-    <!-- Formulário para o usuário digitar a cidade -->
-    <form method="POST">
-        <input type="text" name="cidade" placeholder="Digite a cidade" required />
-        <button type="submit">Buscar</button>
-    </form>
+<!-- O body começa com a classe padrão "bg-default" -->
+<body class="bg-default">
 
-    <!-- Se tiver mensagem de erro, mostra em vermelho -->
-    {% if erro %}
-    <p style="color:red;">{{ erro }}</p>
-    {% endif %}
+    <div class="consulta">
+        <h1>Consulta de Clima</h1>
+        
+        <form method="POST">
+            <input type="text" name="cidade" placeholder="Busque por uma cidade com a sigla do país..." required />
+            <button type="submit">Buscar</button>
+        </form>
+
+        {% if erro %}
+            <p style="color:red;">{{ erro }}</p>
+        {% endif %}
+
+        <!-- Passamos o código do ícone como atributo de dados (data-icon) para o JS ler -->
+        {% if clima %}
+        <div class="resultado" data-icon="{{ clima.icone }}">
+            <h2>{{ clima.nome }}{% if clima.estado %}, {{ clima.estado }}{% endif %}, {{ clima.pais }}</h2>
+            <p class="condicao">{{ clima.descricao }}</p>
+            
+            <div class="temp-principal">
+                <span class="graus">{{ clima.temp }}°C</span>
+                <!-- O JavaScript vai injetar o ícone perfeito, grande e nítido aqui dentro -->
+                <div id="main-weather-icon" class="container-icone-principal">
+                    <span class="icone-nuvem">☁️</span> 
+                </div>
+            </div>
+
+            <div class="detalhes-grid">
+                <div class="coluna">
+                    <span class="icone-detalhe"><i class="fa-solid fa-temperature-half" style="color: #f87171;"></i></span>
+                    <span class="label">Sensação Térmica</span>
+                    <span class="valor">{{ clima.sensacao }}°C</span>
+                </div>
+                <div class="coluna">
+                    <span class="icone-detalhe"><i class="fa-solid fa-droplet" style="color: #60a5fa;"></i></span>
+                    <span class="label">Umidade</span>
+                    <span class="valor">{{ clima.umidade }}%</span>
+                </div>
+                <div class="coluna">
+                    <span class="icone-detalhe"><i class="fa-solid fa-wind" style="color: #34d399;"></i></span>
+                    <span class="label">Vento</span>
+                    <span class="valor">{{ clima.vento }} km/h</span>
+                </div>
+            </div>
+        </div>
+        {% endif %}
     </div>
 
-
-    <!-- Se tiver dados do clima, mostra as informações formatadas -->
-     <div class="infos">
-        {% if clima %}
-    <h2>Clima em {{ clima.nome }}, {{clima.estado}}, {{ clima.pais }}</h2>
-    <p>{{ clima.descricao }}</p>
-    <p>Temperatura: {{ clima.temp }}°C</p>
-    <p>Sensação Térmica: {{clima.sensacao}} °C</p>
-    <p>Umidade: {{ clima.umidade }}%</p>
-    <p>Vento: {{ clima.vento }} m/s</p>
-    {% endif %}
-     </div>
+       <!-- SCRIPT DE CLIMA ULTRA DETALHADO (DIA VS NOITE) -->
     <script>
-</script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const resultado = document.querySelector('.resultado');
+            if (resultado) {
+                const iconCode = resultado.getAttribute('data-icon') || '01d'; 
+                const body = document.body;
+                const iconContainer = document.getElementById('main-weather-icon');
 
+                let faClass = 'fa-solid fa-cloud'; 
+                let bgTheme = 'bg-cloudy-day'; // Padrão de segurança        
+
+                switch(iconCode) {
+                    case '01d': // Céu limpo - Dia
+                        faClass = 'fa-solid fa-sun weather-sunny-anim';
+                        bgTheme = 'bg-sunny';
+                        break;
+                    case '01n': // Céu limpo - Noite
+                        faClass = 'fa-solid fa-moon weather-night-anim';
+                        bgTheme = 'bg-night';
+                        break;
+
+                    // ⛅ ALGUMAS NUVENS (Código 02)
+                    case '02d': // Algumas nuvens - Dia
+                        faClass = 'fa-solid fa-cloud-sun weather-cloud-anim';
+                        bgTheme = 'bg-few-clouds-day';
+                        break;
+                    case '02n': // Algumas nuvens - Noite
+                        faClass = 'fa-solid fa-cloud-moon';
+                        bgTheme = 'bg-few-clouds-night';
+                        break;
+
+                    // ☁️ NUVENS DISPERSAS (Código 03)
+                    case '03d': // Nuvens dispersas - Dia
+                        faClass = 'fa-solid fa-cloud weather-cloud-anim';
+                        bgTheme = 'bg-scattered-day';
+                        break;
+                    case '03n': // Nuvens dispersas - Noite
+                        faClass = 'fa-solid fa-cloud';
+                        bgTheme = 'bg-night-cloudy'; // Sua classe personalizada!
+                        break;
+
+                    // ▓ NUBLADO / ENCOBERTO (Código 04)
+                    case '04d': // Totalmente Nublado - Dia
+                        faClass = 'fa-solid fa-cloud-meatball';
+                        bgTheme = 'bg-cloudy-day';
+                        break;
+                    case '04n': // Totalmente Nublado - Noite
+                        faClass = 'fa-solid fa-cloud';
+                        bgTheme = 'bg-cloudy-night';
+                        break;
+
+                    // Outros fenômenos (Chuva, Tempestade, Neve, etc)
+                    case '09d': case '09n': 
+                        faClass = 'fa-solid fa-cloud-showers-heavy weather-rain-anim';
+                        bgTheme = 'bg-rainy';
+                        break;
+                    case '10d': 
+                        faClass = 'fa-solid fa-cloud-sun-rain weather-rain-anim';
+                        bgTheme = 'bg-rainy';
+                        break;
+                    case '10n': 
+                        faClass = 'fa-solid fa-cloud-moon-rain weather-rain-anim';
+                        bgTheme = 'bg-rainy';
+                        break;
+                    case '11d': case '11n': 
+                        faClass = 'fa-solid fa-cloud-bolt weather-storm-anim';
+                        bgTheme = 'bg-stormy';
+                        break;
+                    case '13d': case '13n': 
+                        faClass = 'fa-solid fa-snowflake weather-snow-anim';
+                        bgTheme = 'bg-snowy';
+                        break;
+                    case '50d': case '50n': 
+                        faClass = 'fa-solid fa-smog';
+                        bgTheme = 'bg-misty';
+                        break;
+                }
+
+                // Reseta as classes anteriores do body e aplica o novo tema correspondente
+                body.className = ''; 
+                body.classList.add(bgTheme);
+
+                if (iconContainer) {
+                    iconContainer.innerHTML = `<i class="${faClass}"></i>`;
+                }
+            }
+        });
+    </script>
 </body>
 </html>
