@@ -284,7 +284,7 @@ def extrair_dados_clima(dados):
         "temp": temp_arredondada,
         "sensacao": sensacao_arredondada,
         "umidade": dados["main"].get("humidity"),
-        "vento": dados["wind"].get("speed" * 3,6),
+        "vento": dados["wind"].get("speed", 0) * 3.6,
         "icone": dados["weather"][0].get("icon") # Extrai o código do ícone para o JavaScript mudar o fundo
     }
 
